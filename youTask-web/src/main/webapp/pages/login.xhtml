@@ -1,0 +1,30 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                template="/WEB-INF/layout/main-template.xhtml">
+
+    <ui:define name="content">
+        <h:form id="loginForm" rendered="#{not loginController.loggedIn}">
+
+            <h3>#{messages['com.acme.youTask.login.headline']}</h3>
+
+            <fieldset>
+                <h:outputLabel for="username" value="#{messages['com.acme.youTask.login.name']}"/>
+                <h:inputText id="username" value="#{loginController.loginName}"/>
+                <br/>
+
+                <h:outputLabel for="password" value="#{messages['com.acme.youTask.login.password']}"/>
+                <h:inputSecret id="password" value="#{loginController.password}" redisplay="true"/>
+                <br/>
+
+                <h:commandButton id="loginBtn" value="#{messages['com.acme.youTask.button.login']}"
+                                 action="#{loginController.login}" styleClass="lnkBtn"/>
+            </fieldset>
+        </h:form>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:a4j="http://richfaces.org/a4j">
+
+	<div class="header">
+		<div class="headerLinkBox">
+			<h:form id="headerLinkForm">
+				<ui:fragment rendered="#{loginController.loggedIn}">
+					<!--<div>
+						#{messages['devA.header.loggedInAs']} #{identity.user.id}
+					</div>-->
+                    <h:panelGroup id="tasksButtons" layout="block">
+                        <h:commandLink id="newTaskBtn" value="#{messages['com.acme.youTask.button.newTask']}"
+                                         action="#{taskController.setHasNewTask(true)}"
+                                         disabled="#{taskController.hasNewTask}"
+                                         styleClass="lnkBtn"/>
+
+                        <h:link id="loadAllTasksBtn" value="#{messages['com.acme.youTask.button.tasks']}"
+                                outcome="/pages/home.xhtml"
+                                styleClass="lnkBtn"/>
+                    </h:panelGroup>
+				</ui:fragment>
+			</h:form>
+		</div>
+
+		<div class="headerUserLinkBox">
+			<h:form id="headerUserLinkForm">
+				<ui:fragment rendered="#{loginController.loggedIn}">
+                    <h:panelGroup id="userButtons" layout="block">
+                        <h:link id="profileBtn" value="#{messages['com.acme.youTask.button.profile']}"
+                                outcome="/pages/profile.xhtml"
+                                styleClass="lnkBtn"/>
+
+                        <h:commandLink id="logoutBtn" value="#{messages['com.acme.youTask.button.logout']}"
+                                         action="#{loginController.logout}"
+                                         styleClass="lnkBtn"/>
+                    </h:panelGroup>
+				</ui:fragment>
+				<ui:fragment rendered="#{not loginController.loggedIn}">
+					<span>
+					</span>
+				</ui:fragment>
+			</h:form>
+		</div>
+
+		<div class="headerYouTaskLogo">
+			<!--<h:graphicImage value="/resources/images/meyle_logo.png" alt="devA" />      -->
+		</div>
+	</div>
+
+</ui:composition>

@@ -1,0 +1,78 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                template="/WEB-INF/layout/main-template.xhtml">
+
+    <ui:define name="content">
+        <h:form id="profileForm">
+            <h3>#{messages['com.acme.youTask.profile.headline']}</h3>
+
+            <fieldset id="userData">
+                <h:outputLabel for="loginName" value="#{messages['com.acme.youTask.profile.name']}"/>
+                <h:inputText id="loginName" value="#{profileController.user.login}"
+                             readonly="#{!profileController.editable}"/>
+                <br/>
+
+                <h:outputLabel for="password" value="#{messages['com.acme.youTask.profile.password']}"/>
+                <h:inputSecret id="password" value="#{profileController.user.password}"
+                               readonly="#{!profileController.editable}"
+                               redisplay="true"/>
+                <br/>
+
+                <h:outputLabel for="pwConfirm" value="#{messages['com.acme.youTask.profile.pwConfirm']}"/>
+                <h:inputSecret id="pwConfirm" value="#{profileController.user.password}"
+                               readonly="#{!profileController.editable}"
+                               redisplay="true"/>
+                <br/>
+
+                <h:outputLabel for="firstName" value="#{messages['com.acme.youTask.profile.firstName']}"/>
+                <h:inputText id="firstName" value="#{profileController.user.firstName}"
+                             readonly="#{!profileController.editable}"/>
+                <br/>
+
+                <h:outputLabel for="lastName" value="#{messages['com.acme.youTask.profile.lastName']}"/>
+                <h:inputText id="lastName" value="#{profileController.user.lastName}"
+                             readonly="#{!profileController.editable}"/>
+                <br/>
+
+                <h:outputLabel for="mail" value="#{messages['com.acme.youTask.profile.mail']}"/>
+                <h:inputText id="mail" value="#{profileController.user.email}"
+                             readonly="#{!profileController.editable}"/>
+                <br/>
+
+                <a4j:commandButton id="editBtn" value="#{messages['com.acme.youTask.button.edit']}"
+                                   action="#{profileController.enableEditMode}"
+                                   rendered="#{!profileController.editable}"
+                                   render="@all"
+                                   styleClass="lnkBtn"/>
+
+                <a4j:commandButton id="confirmBtn" value="#{messages['com.acme.youTask.button.confirm']}"
+                                   action="#{profileController.updateUser}"
+                                   rendered="#{profileController.editable}"
+                                   render="@all"
+                                   execute="profileForm"
+                                   styleClass="lnkBtn"/>
+
+                <a4j:commandButton id="cancelBtn" value="#{messages['com.acme.youTask.button.cancel']}"
+                                   action="#{profileController.disableEditMode}"
+                                   rendered="#{profileController.editable}"
+                                   render="@all"
+                                   execute="profileForm"
+                                   styleClass="lnkBtn"/>
+
+                <a4j:commandButton id="removeBtn" value="#{messages['com.acme.youTask.button.removeProfile']}"
+                                   action="#{profileController.removeUser}"
+                                   rendered="#{profileController.editable}"
+                                   render="@all"
+                                   execute="profileForm"
+                                   styleClass="lnkBtn"/>
+            </fieldset>
+
+        </h:form>
+    </ui:define>
+</ui:composition>

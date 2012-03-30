@@ -1,0 +1,161 @@
+<!DOCTYPE composition PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                template="/WEB-INF/layout/main-template.xhtml">
+
+    <ui:define name="content">
+        <h:form id="tasksForm">
+            <h:panelGroup layout="block">
+                <!-- Create New Task -->
+                <h:panelGroup id="createTask" layout="block"
+                              rendered="#{taskController.hasNewTask}"
+                              style="margin-top:10px;">
+                    <h:outputLabel for="taskNameInput" value="#{messages['com.acme.youTask.home.description']}:"
+                                   style="margin-right:5px;"/>
+                    <h:inputText id="taskNameInput" value="#{taskController.task.label}"
+                                 style="margin-right:5px;"/>
+
+                    <h:outputLabel for="createType" value="#{messages['com.acme.youTask.home.category']}:"
+                                   style="margin-right:5px;"/>
+                    <h:selectOneMenu id="createType" value="#{taskController.task.category}">
+                        <f:selectItem itemValue="#{null}"
+                                      itemLabel="#{messages['com.acme.youTask.home.categoryFilter.noSelection']}"
+                                      noSelectionOption="true"/>
+                        <f:selectItems value="#{categoryFilterTypes}" var="type"
+                                       itemValue="#{type}"
+                                       itemLabel="#{messages[type.i18nDescriptionId]}"/>
+                        <a4j:ajax event="valueChange" immediate="true" render="createButton"/>
+                    </h:selectOneMenu>
+
+                    <a4j:commandButton id="createButton" action="#{taskController.saveNewTask}"
+                                       disabled="#{taskController.task.category == null}"
+                                       value="#{messages['com.acme.youTask.button.create']}"
+                                       render="@all"
+                                       styleClass="lnkBtn"/>
+
+                    <h:panelGroup layout="block" style="margin-top:3px;color:red;">
+                        <h:message for="taskNameInput" showDetail="true" showSummary="false"/>
+                    </h:panelGroup>
+                </h:panelGroup>
+
+                <!-- Category Filter -->
+                <h:panelGroup id="categoryFilter" layout="block" style="margin-top:10px;margin-bottom:10px;">
+                    <h:outputLabel for="type" value="#{messages['com.acme.youTask.home.categoryFilter.filter']}: "/>
+
+                    <h:selectOneMenu id="type" value="#{taskController.categoryFilter}"
+                                     valueChangeListener="#{taskController.filterChanged}">
+                        <f:selectItem itemValue="#{null}"
+                                      itemLabel="#{messages['com.acme.youTask.home.categoryFilter.noSelection']}"
+                                      noSelectionOption="true"/>
+                        <f:selectItems value="#{categoryFilterTypes}" var="type"
+                                       itemValue="#{type}" itemLabel="#{messages[type.i18nDescriptionId]}"/>
+                        <a4j:ajax event="valueChange" render="tasksTable msgForm" execute="@this"/>
+                    </h:selectOneMenu>
+                </h:panelGroup>
+
+                <!-- Tasks Table -->
+                <rich:dataTable id="tasksTable" value="#{taskController.tasks}" var="task">
+                    <rich:column id="taskDoneCol">
+                        <f:facet name="header">
+                            <h:outputText value="#{messages['com.acme.youTask.home.dataTable.header.done']}"/>
+                        </f:facet>
+
+                        <h:selectBooleanCheckbox value="#{task.finished}"
+                                                 disabled="true"
+                                                 rendered="#{!taskController.getIsTaskEditable(task)}"/>
+                        <h:selectBooleanCheckbox id="taskFinished" value="#{taskController.task.finished}"
+                                                 disabled="false"
+                                                 rendered="#{taskController.getIsTaskEditable(task)}"/>
+                    </rich:column>
+
+                    <rich:column id="taskDescriptionCol">
+                        <f:facet name="header">
+                            <h:outputText value="#{messages['com.acme.youTask.home.dataTable.header.description']}"/>
+                        </f:facet>
+
+                        <h:outputText value="#{task.label}" rendered="#{!taskController.getIsTaskEditable(task)}"/>
+                        <h:inputText id="taskLabel" value="#{taskController.task.label}"
+                                     rendered="#{taskController.getIsTaskEditable(task)}"/>
+                    </rich:column>
+
+                    <rich:column id="taskCategoryCol">
+                        <f:facet name="header">
+                            <h:outputText value="#{messages['com.acme.youTask.home.dataTable.header.category']}"/>
+                        </f:facet>
+
+                        <h:outputText value="#{messages[task.category.i18nDescriptionId]}"
+                                      rendered="#{!taskController.getIsTaskEditable(task)}"
+                                      styleClass="#{task.category.name().toLowerCase()}"/>
+                        <h:selectOneMenu id="taskCategory" value="#{taskController.task.category}"
+                                         rendered="#{taskController.getIsTaskEditable(task)}">
+                            <f:selectItem itemValue="#{null}"
+                                          itemLabel="#{messages['com.acme.youTask.home.categoryFilter.noSelection']}"
+                                          noSelectionOption="true"/>
+                            <f:selectItems value="#{categoryFilterTypes}" var="type"
+                                           itemValue="#{type}"
+                                           itemLabel="#{messages[type.i18nDescriptionId]}"/>
+                        </h:selectOneMenu>
+                    </rich:column>
+
+                    <rich:column id="taskButtonsCol">
+                        <a4j:commandButton id="editButton" value="#{messages['com.acme.youTask.button.edit']}"
+                                           action="#{taskController.enableEditMode}"
+                                           rendered="#{!taskController.getIsTaskEditable(task)}"
+                                           render="createTask tasksTable msgForm"
+                                           execute="tasksTable"
+                                           styleClass="lnkBtn">
+                            <f:setPropertyActionListener target="#{taskController.task}" value="#{task}"/>
+                        </a4j:commandButton>
+
+                        <a4j:commandButton id="updateButton" value="#{messages['com.acme.youTask.button.save']}"
+                                           action="#{taskController.updateTask}"
+                                           rendered="#{taskController.getIsTaskEditable(task)}"
+                                           render="tasksTable msgForm"
+                                           execute="tasksTable"
+                                           styleClass="lnkBtn">
+                        </a4j:commandButton>
+
+                        <a4j:commandButton id="removeButton" value="#{messages['com.acme.youTask.button.remove']}"
+                                           rendered="#{taskController.getIsTaskEditable(task)}"
+                                           styleClass="lnkBtn">
+                            <rich:componentControl target="confirmRemove" event="click" operation="show"/>
+                        </a4j:commandButton>
+
+                        <a4j:commandButton id="cancelButton" value="#{messages['com.acme.youTask.button.cancel']}"
+                                           action="#{taskController.disableEditMode}"
+                                           rendered="#{taskController.getIsTaskEditable(task)}"
+                                           render="tasksTable msgForm"
+                                           execute="tasksTable"
+                                           styleClass="lnkBtn"/>
+                    </rich:column>
+                </rich:dataTable>
+            </h:panelGroup>
+
+
+            <rich:popupPanel id="confirmRemove" trimOverlayedElements="false">
+                <h:outputText value="#{messages['com.acme.youTask.home.confirmRemove.text']}" style="text-align:center;"/>
+
+                <h:panelGroup style="vertical-align:bottom;text-align:center;">
+                    <a4j:commandButton id="confirmRemoveBtn" value="#{messages['com.acme.youTask.button.remove']}"
+                                       onclick="#{rich:component('confirmRemove')}.hide()"
+                                       action="#{taskController.removeTask}"
+                                       render="tasksTable msgForm"
+                                       execute="tasksTable"
+                                       styleClass="lnkBtn"/>
+
+                    <a4j:commandButton id="confirmCancelBtn" value="#{messages['com.acme.youTask.button.cancel']}"
+                                       onclick="#{rich:component('confirmRemove')}.hide()"
+                                       render="tasksTable msgForm"
+                                       styleClass="lnkBtn"/>
+                </h:panelGroup>
+            </rich:popupPanel>
+        </h:form>
+    </ui:define>
+
+</ui:composition>
+
